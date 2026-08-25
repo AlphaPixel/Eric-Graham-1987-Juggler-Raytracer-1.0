@@ -1,0 +1,22 @@
+{
+  "name": "juggler-raytrace",
+  "version-string": "1.0",
+  "builtin-baseline": "50c0cb48a0cf2f6fc5c7b2c0d2bafbe26d0a7ca2",
+  "features": {
+    "sdl2": {
+      "description": "Build the SDL display shim against SDL2.",
+      "dependencies": [
+        "sdl2"
+      ]
+    },
+    "sdl3": {
+      "description": "Build the SDL display shim against SDL3.",
+      "dependencies": [
+        "sdl3"
+      ]
+    }
+  },
+  "default-features": [
+    "sdl3"
+  ]
+}

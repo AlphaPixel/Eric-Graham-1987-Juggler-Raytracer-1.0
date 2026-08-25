@@ -11,13 +11,14 @@
         for non commercial use by the original purchaser of this software,
         and provided that this notice is included in the modified version.
 */
- 
+
+#include "rt.h"
 #include "exec/types.h"
 #include "exec/exec.h"
 #include "intuition/intuition.h"
- 
- 
- 
+#include <stdio.h>
+#include <stdlib.h>
+
 static int threshhold=4;
 static int nallocr=2;
 static int creg[16][3]=         /* color registers */
@@ -37,9 +38,9 @@ static int creg[16][3]=         /* color registers */
          {0,0,0},
          {0,0,0},
          {0,0,0}};
- 
- 
- 
+
+
+
  static struct NewScreen newscreen={
    0,0,         /* Leftedge, topedge */
    320,200,     /* Width, height */
@@ -51,8 +52,8 @@ static int creg[16][3]=         /* color registers */
    NULL,        /* title */
    NULL,        /* gadgets */
    NULL};       /* bitmap */
- 
- 
+
+
  static struct NewWindow newwindow={
    0,0,              /* LeftEdge, TopEdge   */
    320,200,          /* Width, Height       */
@@ -70,68 +71,60 @@ static int creg[16][3]=         /* color registers */
    0,0,              /* MaxWidth, MaxHeight */
    CUSTOMSCREEN      /* Type                */
    };
- 
+
  struct RastPort *rastport;
- 
+
  static struct Screen *screen;
  static struct Window *window;
  struct ViewPort *viewport;
- 
+
  struct IntuitionBase *IntuitionBase;
  struct GfxBase *GfxBase;
  struct DosBase *DosBase;
- struct Window *OpenWindow();
- struct Screen *OpenScreen();
- struct ViewPort *ViewPortAddress();
- struct IOStdReq *CreateStdIO();
- struct Port *CreatePort();
- 
- 
- 
- 
-        void
-initsc(width,height)    /* set up the screen and window */
-int width,height;
+
+
+
+
+void initsc(int width,int height)    /* set up the screen and window */
 {int i;
  static UWORD pointer[]={0,0,0,0,0,0};
- 
+
  if ((GfxBase=(struct GfxBase *)
       OpenLibrary("graphics.library",0)) == NULL)
          cleanup("GfxBase");
- 
+
  if ((IntuitionBase=(struct IntuitionBase *)
       OpenLibrary("intuition.library",0)) == NULL)
          cleanup("IntuitionBase");
- 
+
  if ((DosBase=(struct DosBase *)
       OpenLibrary("dos.library",0)) == NULL)
          cleanup("DosBase");
- 
+
  screen=OpenScreen(&newscreen);
  newwindow.Screen=screen;
- newwindow.Width=width;
- newwindow.MinWidth=width;
- newwindow.MaxWidth=width;
- newwindow.Height=height;
- newwindow.MinHeight=height;
- newwindow.MaxHeight=height;
+ newwindow.Width=(short)width;
+ newwindow.MinWidth=(short)width;
+ newwindow.MaxWidth=(unsigned short)width;
+ newwindow.Height=(short)height;
+ newwindow.MinHeight=(short)height;
+ newwindow.MaxHeight=(unsigned short)height;
  window=OpenWindow(&newwindow);
  if (!window) cleanup("OpenWindow");
  rastport=window->RPort;
- 
+
  /* viewport=ViewPortAddress(window); */
  viewport=&(screen->ViewPort);
  for (i=0; i<32; ++i)
-       SetRGB4(viewport,i, 0,0,0);
+       SetRGB4(viewport,(short)i, 0,0,0);
  SetRGB4(viewport,1, 15,15,15);
- 
+
  SetPointer(window,pointer,1,8,0,0);
 }
- 
- 
- 
-cleanup(s)
-char *s;
+
+
+
+void cleanup(const char *s)
 {
  if (window) CloseWindow(window);
  if (screen) CloseScreen(screen);
@@ -141,16 +134,14 @@ char *s;
  if (s) puts(s);
  exit(!!s);
 }
- 
- 
- 
-ham2(i,j,pix)
-int i,j;
-int pix[3];
+
+
+
+void ham2(int i,int j,int pix[3])
 {int k;
  static int prevpix[3],map[3]={0x20,0x30,0x10};
  int dif,dif2,id,maxdif,pen;
- 
+
  if (!i)        /* first pixel on a line, use a register */
         {pen=nearestp(pix,&dif2);
          reg:
@@ -170,17 +161,17 @@ int pix[3];
                 }
          pen=map[id]+pix[id]; prevpix[id]=pix[id];      /* use HAM */
         }
- SetAPen(rastport,pen); WritePixel(rastport,i,j);
+ SetAPen(rastport,(short)pen); WritePixel(rastport,(short)i,(short)j);
 }
- 
- 
-nearestp(c,dist)
-int *c,*dist;
+
+
+int nearestp(int *c,int *dist)
 /*      Return the pen nearest to the color c.  Allocate it maybe. */
 {int i,mindist,nearest,d;
- 
+
  mindist=32000;
- 
+ nearest=0;
+
  for (i=0; i<nallocr; ++i)
         {d=coldist2(c,creg[i]);
          if (d < mindist)
@@ -189,19 +180,18 @@ int *c,*dist;
  if (mindist > threshhold && nallocr < 16)
         {for (i=0; i<3; ++i)
                 creg[nallocr][i]=c[i];
-         SetRGB4(viewport,nallocr, c[0],c[1],c[2]);
+         SetRGB4(viewport,(short)nallocr, (short)c[0],(short)c[1],(short)c[2]);
          nearest=nallocr++;
          mindist=0;
         }
  *dist=mindist;
  return nearest;
 }
- 
- 
-coldist(a,b)    /* The 'distance' between two colors after we correct */
-int *a,*b;      /* the worst color */
+
+
+int coldist(int *a,int *b)    /* The 'distance' between two colors after we correct */
 {int k,r,d,m;
- 
+
  for (r=k=m=0; k<3; ++k)
         {d=a[k]-b[k];
          if (d < 0) d=-d;
@@ -210,12 +200,11 @@ int *a,*b;      /* the worst color */
         }
  return r-m;
 }
- 
- 
-coldist2(a,b)   /* the 'distance' between two colors */
-int *a,*b;
+
+
+int coldist2(int *a,int *b)   /* the 'distance' between two colors */
 {int k,r,d;
- 
+
  for (r=k=0; k<3; ++k)
         {d=a[k]-b[k];
          if (d < 0) d=-d;
