@@ -276,6 +276,10 @@ then reads and prints up to roughly 100 following characters before calling the 
 
 ## Difference from Alain Thellier's `rt-gcc`
 
+> Note: Alain Thellier's `rt-gcc` is a separate third-party project and is **not
+> included in this repository** — it is omitted for licensing reasons. The
+> references below are to that external project for comparison only.
+
 Alain Thellier's `rt-gcc/scenes.c` manually transcribes the `.dat` files into C setup functions. It is not a runtime `.dat` parser.
 
 `ssg` is different. The format strings and parser function show that it reads `.dat`-style text at runtime.

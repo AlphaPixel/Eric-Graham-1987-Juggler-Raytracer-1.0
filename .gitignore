@@ -81,3 +81,7 @@ Raytracer_1987_Graham_Source_Code/vamos-*.ssimg
 
 # Large raw framebuffer dump (PNG renditions are kept in media/)
 /media/robot-4096x3072.rgb
+
+# Alain Thellier's rt-gcc is a separate third-party project, omitted for
+# licensing reasons; ignore it if checked out here for comparison.
+/rt-gcc/
