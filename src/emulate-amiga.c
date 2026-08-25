@@ -1,3 +1,4 @@
+#include "rt.h"
 #include "exec/exec.h"
 #include "intuition/intuition.h"
 
@@ -247,6 +248,7 @@ void CloseWindow(struct Window *window)
     int done;
 
     present();
+    write_captured_png("image.png");
     done=0;
     while (!done) {
         pump_events(&done);

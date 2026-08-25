@@ -53,7 +53,8 @@ struct observer {
 };
 
 double dot(double *a,double *b);
-void setup(struct observer *o,struct world *w,int *skip);
+void setup(struct observer *o,struct world *w,int *skip,const char *datfile);
+int setupfromdat(struct observer *o,struct world *w,int *skip,const char *datfile);
 int raytrace(double brite[3],double *line,struct world *w);
 void skybrite(double brite[3],double *line,struct world *w);
 void pixline(double *line,struct observer *o,int i,int j);
@@ -76,6 +77,8 @@ int veczero(double *v);
 void initsc(int width,int height);
 void cleanup(const char *s);
 void ham(int i,int j,double brite[3]);
+void capture_rgb(int i,int j,double brite[3]);
+void write_captured_png(const char *name);
 void ham2(int i,int j,int pix[3]);
 int nearestp(int *c,int *dist);
 int coldist(int *a,int *b);

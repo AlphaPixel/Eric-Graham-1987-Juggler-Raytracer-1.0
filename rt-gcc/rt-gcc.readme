@@ -1,0 +1,18 @@
+What is RT ?
+"Jimmy_Maher : So, once upon a time there was a little demo released that some of you may have seen and/or heard about, called the Juggler. The gentleman who wrote that demo, Eric Graham, went on to write a 3D modeling / ray tracing application called Sculpt 3D, published by Byte by Byte and the first of its kind on a personal computer.
+Between these two events, Graham distributed several disks and newsletters to members of a sort of ray tracing club he organized. The first of these, Raytracer 1.0, contained the scene data used to construct the Juggler."
+"RT: RT was the first ray tracer written for the Amiga, by Eric Graham. It will model a universe made of only spheres, a sky, and a checkered or solid ground. It
+is relatively fast, but not generally useful for realistic modeling because of the sphere limitation."
+
+What is RT-GCC ?
+This is an attempt to recompile the original RT sources (rt1.c rt2.c rt3.c) with gcc for 68020-40
+As the the original RT sources dont load the 3 scenes (robot.dat ele.dat dragon.dat) but only draw a raytraced sphere so I have patched (scenes.c) the sources to make it load the data from those sources
+Note that those early sources seems to have (?) a bug because mirror spheres are not traced correctly ...
+
+Alain Thellier
+
+usage:
+rt			draw the sphere
+rt robot		draw the robot scene (the juggler)
+rt ele		draw the elephant scene
+rt dragon		draw the dragon scene (but this scene got an error)

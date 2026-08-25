@@ -37,6 +37,7 @@
 *.hex
 out/
 build/
+build-*/
 vcpkg_installed/
 CMakeUserPresets.json
 
@@ -60,3 +61,15 @@ dkms.conf
 
 # IDE/toolchain stuff
 .vs
+launch.vs.json
+
+# Generated validation outputs
+Raytracer_1987_Graham_Source_Code/*-s2-recreated.rgb
+Raytracer_1987_Graham_Source_Code/*-s2-recreated.ssimg
+Raytracer_1987_Graham_Source_Code/*-s2-msvc.rgb
+Raytracer_1987_Graham_Source_Code/*-s2-msvc.ssimg
+Raytracer_1987_Graham_Source_Code/*-s2-v-recreated.rgb
+Raytracer_1987_Graham_Source_Code/*-s2-v-recreated.ssimg
+Raytracer_1987_Graham_Source_Code/*-s2-v-msvc.rgb
+Raytracer_1987_Graham_Source_Code/*-s2-v-msvc.ssimg
+Raytracer_1987_Graham_Source_Code/*-recreated.rgb
