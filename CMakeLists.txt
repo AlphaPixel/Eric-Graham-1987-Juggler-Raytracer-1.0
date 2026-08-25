@@ -138,6 +138,10 @@ if (BUILD_TESTING)
         "${CMAKE_SOURCE_DIR}/Raytracer_1987_Graham_Source_Code/dragon.dat"
         "${CMAKE_SOURCE_DIR}/Raytracer_1987_Graham_Source_Code/dragon-s2.rgb"
         "${CMAKE_SOURCE_DIR}/Raytracer_1987_Graham_Source_Code/robot-s2-v.rgb"
+        "${CMAKE_SOURCE_DIR}/Raytracer_1987_Graham_Source_Code/robot-s2.ssimg"
+        "${CMAKE_SOURCE_DIR}/Raytracer_1987_Graham_Source_Code/robot-s2-v.ssimg"
+        "${CMAKE_SOURCE_DIR}/Raytracer_1987_Graham_Source_Code/ele-s2.ssimg"
+        "${CMAKE_SOURCE_DIR}/Raytracer_1987_Graham_Source_Code/dragon-s2.ssimg"
     )
     set(_ssg_can_validate TRUE)
     foreach (_ssg_validation_file IN LISTS _ssg_validation_files)

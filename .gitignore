@@ -73,3 +73,11 @@ Raytracer_1987_Graham_Source_Code/*-s2-v-recreated.ssimg
 Raytracer_1987_Graham_Source_Code/*-s2-v-msvc.rgb
 Raytracer_1987_Graham_Source_Code/*-s2-v-msvc.ssimg
 Raytracer_1987_Graham_Source_Code/*-recreated.rgb
+Raytracer_1987_Graham_Source_Code/*-recreated.ssimg
+
+# vamos scratch output
+Raytracer_1987_Graham_Source_Code/vamos-*.rgb
+Raytracer_1987_Graham_Source_Code/vamos-*.ssimg
+
+# Large raw framebuffer dump (PNG renditions are kept in media/)
+/media/robot-4096x3072.rgb

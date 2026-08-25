@@ -25,6 +25,7 @@ class Sample:
     expected_ss_width: int | None = None
     expected_ss_height: int | None = None
     expected_ss_len: int | None = None
+    max_ss_body_diff: int | None = None
     extra_args: tuple[str, ...] = ()
     render_args: tuple[str, ...] = ("S=2",)
 
@@ -44,6 +45,7 @@ SAMPLES = (
         expected_ss_width=80,
         expected_ss_height=50,
         expected_ss_len=3052,
+        max_ss_body_diff=16,
     ),
     Sample(
         name="robot-full",
@@ -63,7 +65,7 @@ SAMPLES = (
         dat="ele.dat",
         original_rgb="ele-s2.rgb",
         recreated_rgb="ele-s2-recreated.rgb",
-        original_ss=None,
+        original_ss="ele-s2.ssimg",
         recreated_ss="ele-s2-recreated.ssimg",
         expected_len=12000,
         max_diff=4,
@@ -72,6 +74,7 @@ SAMPLES = (
         expected_ss_width=80,
         expected_ss_height=50,
         expected_ss_len=3052,
+        max_ss_body_diff=4,
     ),
     Sample(
         name="ele-full",
@@ -91,7 +94,7 @@ SAMPLES = (
         dat="dragon.dat",
         original_rgb="dragon-s2.rgb",
         recreated_rgb="dragon-s2-recreated.rgb",
-        original_ss=None,
+        original_ss="dragon-s2.ssimg",
         recreated_ss="dragon-s2-recreated.ssimg",
         expected_len=12000,
         max_diff=1,
@@ -100,6 +103,7 @@ SAMPLES = (
         expected_ss_width=80,
         expected_ss_height=50,
         expected_ss_len=3052,
+        max_ss_body_diff=4,
     ),
     Sample(
         name="robot-v",
@@ -115,6 +119,7 @@ SAMPLES = (
         expected_ss_width=80,
         expected_ss_height=50,
         expected_ss_len=3052,
+        max_ss_body_diff=16,
         extra_args=("V",),
     ),
 )
@@ -144,6 +149,13 @@ def palette_block(path: Path) -> bytes:
     if len(data) < 52:
         raise ValueError(f"{path} is too short to contain an ss header")
     return data[4:52]
+
+
+def bitplane_body(path: Path) -> bytes:
+    data = path.read_bytes()
+    if len(data) < 52:
+        raise ValueError(f"{path} is too short to contain an ss header")
+    return data[52:]
 
 
 def ss_dimensions(path: Path) -> tuple[int, int]:
@@ -239,13 +251,33 @@ def validate(scene_dir: Path, sample: Sample) -> bool:
             if sample.original_ss:
                 original_ss = scene_dir / sample.original_ss
                 if not original_ss.exists():
-                    print(f"{sample.name}: missing ss palette comparison file", file=sys.stderr)
+                    print(f"{sample.name}: missing ss comparison file", file=sys.stderr)
                     ok = False
-                elif palette_block(original_ss) == palette_block(recreated_ss):
-                    print(f"{sample.name}: ss palette/register block matches")
                 else:
-                    print(f"{sample.name}: ss palette/register block differs", file=sys.stderr)
-                    ok = False
+                    if palette_block(original_ss) == palette_block(recreated_ss):
+                        print(f"{sample.name}: ss palette/register block matches")
+                    else:
+                        print(f"{sample.name}: ss palette/register block differs", file=sys.stderr)
+                        ok = False
+                    # The six-bitplane body is a real oracle only when the
+                    # original ss was captured with a framebuffer-backed vamos
+                    # run (tools/vamos-ext); compare it when a tolerance is set.
+                    if sample.max_ss_body_diff is not None:
+                        ob = bitplane_body(original_ss)
+                        rb = bitplane_body(recreated_ss)
+                        body_diff = sum(1 for i in range(min(len(ob), len(rb))) if ob[i] != rb[i])
+                        body_diff += abs(len(ob) - len(rb))
+                        if body_diff <= sample.max_ss_body_diff:
+                            print(
+                                f"{sample.name}: ss bitplane body diff={body_diff}/{len(ob)}"
+                            )
+                        else:
+                            print(
+                                f"{sample.name}: ss bitplane body diff exceeds limit "
+                                f"{body_diff} > {sample.max_ss_body_diff}",
+                                file=sys.stderr,
+                            )
+                            ok = False
 
     return ok
 
